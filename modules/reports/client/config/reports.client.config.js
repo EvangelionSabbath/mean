@@ -16,6 +16,11 @@ angular.module('reports').run(['Menus',
       title: 'List Reports',
       state: 'reports.list'
     });
+    // Add the dropdown list item on map
+    Menus.addSubMenuItem('topbar', 'reports', {
+      title: 'View Reports',
+      state: 'reports.listMap'
+    });
 
     // Add the dropdown create item
     Menus.addSubMenuItem('topbar', 'reports', {
