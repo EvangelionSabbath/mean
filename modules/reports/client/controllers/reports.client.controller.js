@@ -80,9 +80,9 @@ angular.module('reports').controller('ReportsController', ['$scope', '$statePara
       $scope.reports = Reports.query();
     };
 
-       // Find a list of Reports in map
-       $scope.findMap = function () {
-      //$scope.reports = Reports.query();
+    // Find a list of Reports in map
+    $scope.findMap = function () {
+    //$scope.reports = Reports.query();
       Reports.query().$promise.then(function(result) {
         $scope.reports = result;
         $scope.markers = createMarkers(result);
@@ -90,35 +90,35 @@ angular.module('reports').controller('ReportsController', ['$scope', '$statePara
     };
 
         // Create markers
-        var createMarkers = function(reports) {
+    var createMarkers = function(reports) {
 //          for(var i in reports){
-  var i = 1;
-           var actual = reports[i].actual;
-           var expected = reports[i].expected;
-           var efficiency = actual-expected;
-           if (efficiency > 0) {
-             // TODO
-           }
-           console.log("act: " + actual);
-           console.log("exp: " + expected);
-           console.log("lat: " + reports[i].lat);
-           console.log("lng: " + reports[i].lng);
-           console.log("i: " + i);
+      var i = 1;
+      var actual = reports[i].actual;
+      var expected = reports[i].expected;
+      var efficiency = actual-expected;
+      if (efficiency > 0) {
+                   // TODO
+      }
+      console.log("act: " + actual);
+      console.log("exp: " + expected);
+      console.log("lat: " + reports[i].lat);
+      console.log("lng: " + reports[i].lng);
+      console.log("i: " + i);
 
-           angular.extend($scope, {
-               
-                markers: {
-                 mainMarker: {
-                 lat: reports[i].lat,
-                 lng: reports[i].lng,
-                 focus: true,
-                 message: reports[i].city,
-                 draggable: true
-                 }
-                }
-          }); // end of angular.extend
-//         }
-       };
+      angular.extend($scope, {
+
+        markers: {
+          mainMarker: {
+            lat: reports[i].lat,
+            lng: reports[i].lng,
+            focus: true,
+            message: reports[i].city,
+            draggable: true
+          }
+        }
+      }); // end of angular.extend
+    // 
+    };
 
     // Find existing Report
     $scope.findOne = function () {
