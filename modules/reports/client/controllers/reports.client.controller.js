@@ -134,7 +134,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$statePara
             className: 'red',
             iconAnchor:  [5, 5]
           }
-        }
+        };
 
         for (report=0; report<1000; report++) {
 
@@ -159,17 +159,32 @@ angular.module('reports').controller('ReportsController', ['$scope', '$statePara
           var month = date.getMonth() + 1;
 
           if (efficiency > 0) {
-             marker = { lat: parseFloat(lat), lng: parseFloat(lng), focus: true, message: reports[report].name, draggable: true, icon: icons.green, month: month, year: year };
+            marker = { 
+              lat: parseFloat(lat), 
+              lng: parseFloat(lng), 
+              focus: true, 
+              message: reports[report].name, 
+              draggable: true, 
+              icon: icons.green, 
+              month: month, 
+              year: year 
+            };
           }
-         
           else {
-             marker = { lat: parseFloat(lat), lng: parseFloat(lng), focus: true, message: reports[report].name, draggable: true, icon: icons.red};
+            marker = { 
+              lat: parseFloat(lat), 
+              lng: parseFloat(lng), 
+              focus: true, 
+              message: reports[report].name, 
+              draggable: true, 
+              icon: icons.red 
+            };
           }
 
           console.log('YEAR: ' + year);
           console.log('MONTH: ' + month);
 
-          if (month = 1) {
+          if (month === 1) {
  
             markers[report] = marker;
 
