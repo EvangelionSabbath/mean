@@ -3,7 +3,6 @@
 // Reports controller
 angular.module('reports').controller('ReportsController', ['$scope', '$stateParams', '$location', 'Authentication', 'Reports',
   function ($scope, $stateParams, $location, Authentication, Reports) {
-
     $scope.center = {}; 
     angular.extend($scope, {
       center: {
@@ -185,7 +184,6 @@ angular.module('reports').controller('ReportsController', ['$scope', '$statePara
       });
       
     }; // end of findMap()
-    
 
     // Find existing Report
     $scope.findOne = function () {
@@ -195,4 +193,3 @@ angular.module('reports').controller('ReportsController', ['$scope', '$statePara
     };
   }
 ]);
-
