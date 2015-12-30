@@ -193,7 +193,10 @@ angular.module('reports').controller('ReportsController', ['$scope', '$statePara
 
         }
 
-        $scope.markers = markers;
+        $scope.$apply(function(){
+          $scope.markers = markers;
+        });
+        
         console.log('SCOPE MARKERS: ' + $scope.markers);
 
       });
