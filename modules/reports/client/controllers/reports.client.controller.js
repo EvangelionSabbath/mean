@@ -3,6 +3,7 @@
 // Reports controller
 angular.module('reports').controller('ReportsController', ['$scope', '$stateParams', '$location', 'Authentication', 'Reports',
   function ($scope, $stateParams, $location, Authentication, Reports) {
+
     $scope.center = {}; 
     angular.extend($scope, {
       center: {
@@ -12,7 +13,6 @@ angular.module('reports').controller('ReportsController', ['$scope', '$statePara
       }
     });
 
-    
     $scope.authentication = Authentication;
 
     // Create new Report
@@ -89,8 +89,6 @@ angular.module('reports').controller('ReportsController', ['$scope', '$statePara
     $scope.find = function () {
       $scope.reports = Reports.query();
     };
-
-
 
     // Shows the retrieved list of Reports in map
     $scope.findMap = function () {
@@ -197,3 +195,4 @@ angular.module('reports').controller('ReportsController', ['$scope', '$statePara
     };
   }
 ]);
+

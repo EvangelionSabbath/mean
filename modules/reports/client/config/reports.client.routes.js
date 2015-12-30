@@ -14,10 +14,12 @@ angular.module('reports').config(['$stateProvider',
         url: '',
         templateUrl: 'modules/reports/client/views/list-reports.client.view.html'
       })
+
       .state('reports.listMap', {
         url: '/map',
         templateUrl: 'modules/reports/client/views/map-reports.client.view.html'
       })
+
       .state('reports.create', {
         url: '/create',
         templateUrl: 'modules/reports/client/views/create-report.client.view.html',
