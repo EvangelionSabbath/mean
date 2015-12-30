@@ -8,7 +8,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$statePara
       center: {
         lat: 43,
         lng: 14,
-        zoom: 7
+        zoom: 5
       }
     });
 
