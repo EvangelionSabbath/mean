@@ -1,0 +1,20 @@
+<style>
+        .red {
+            border-radius: 120px;
+            opacity: .15;
+            background-color: #FF0000;
+        }
+
+        .green {
+            border-radius: 120px;
+            opacity: .15;
+            background-color: #228B22;
+        }
+</style>
+<section ng-controller="ReportsController" ng-init="findMap()">
+  <div class="page-header">
+    <h1>Reports</h1>
+  </div>
+<leaflet center="center" markers="markers" height="480px" width="640px"></leaflet>
+
+</section>
