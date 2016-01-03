@@ -100,7 +100,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', '$
         setTimeout(function() {
           resolve($scope.reports);
           console.log ('Promise resolved.');
-        }, 10000);
+        }, 30000);
 
       });
 
@@ -134,6 +134,10 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', '$
             iconAnchor:  [5, 5]
           }
         };
+        //medie regionali
+        var efficiency_regions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        var efficiency_sum = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        var avgs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
         for (report=0; report<10000; report++) {
 
@@ -148,6 +152,12 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', '$
           var date = new Date(period_from);
           var year = date.getYear();
           var month = date.getMonth() + 1;
+
+          //aggiungo report ai vettori
+          var indexRegions = getRegionCode(reports[report].region);
+          //console.log("------------indici " + indexRegions);
+          efficiency_regions[indexRegions - 1] = efficiency_regions[indexRegions - 1] + efficiency;
+          efficiency_sum[indexRegions - 1]++;
 
           if (efficiency > 0) {
             marker = { 
@@ -177,8 +187,24 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', '$
           }
          
         }
+        //stampa di prova per gli array
+        console.log(efficiency_regions);
+        console.log(efficiency_sum);
+        for (var i = 0; i < avgs.length; i++){
+          if (efficiency_sum[i] !== 0) {
+            avgs[i] = efficiency_regions[i] / efficiency_sum[i];
+          }
+        }
+        console.log(avgs);
 
-        $http.get('modules/core/client/geoJson/province.geojson').success(function(data, status) {
+
+
+        $http.get('modules/core/client/geoJson/regioni.geojson').success(function(data, status) {
+          for (var i = 0; i < avgs.length; i++){
+            console.log(data.features[i].properties);
+            data.features[i].properties.average = avgs[i];
+            console.log(data.features[i].properties);
+          }
           angular.extend($scope, {
             geojson: {
               data: data,
@@ -203,16 +229,43 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', '$
       
     }; // end of findMap()
 
-    function getColor(regionCode) {
+    function getRegionCode(regionString){
+      var regionCode;
+      switch (regionString){
+        case "Piemonte": regionCode = 1; break;
+        case "Valle d'Aosta": regionCode = 2; break;
+        case "Lombardia": regionCode = 3; break;
+        case "Trentino Alto Adige": regionCode = 4; break;
+        case "Veneto": regionCode = 5; break;
+        case "Friuli Venezia Giulia": regionCode = 6; break;
+        case "Liguria": regionCode = 7; break;
+        case "Emilia Romagna": regionCode = 8; break;
+        case "Toscana": regionCode = 9; break;
+        case "Umbria": regionCode = 10; break;
+        case "Marche": regionCode = 11; break;
+        case "Lazio": regionCode = 12; break;
+        case "Abruzzo": regionCode = 13; break;
+        case "Molise": regionCode = 14; break;
+        case "Campania": regionCode = 15; break;
+        case "Puglia": regionCode = 16; break;
+        case "Basilicata": regionCode = 17; break;
+        case "Calabria": regionCode = 18; break;
+        case "Sicilia": regionCode = 19; break;
+        case "Sardegna": regionCode = 20; break;
+      }
+      return regionCode;
+    }
+
+    function getColor(efficiency) {
       // if $scope.configuration === 2 ...
       // Il codice regione 12 corrisponde al Lazio
-      return regionCode === 12 ? '#BD0026':
-        regionCode < 12 ? '#BD0026':
-        regionCode > 20 ? '#E31A1C':
-        regionCode > 15 ? '#FC4E2A':
-        regionCode > 10 ? '#FD8D3C':
-        regionCode > 5 ? '#FEB24C':
-        regionCode > 0 ? '#FED976':
+      return efficiency === 0 ? '#BD0026':
+        efficiency < 0 ? '#BD0026':
+        efficiency > 200 ? '#E31A1C':
+        efficiency > 300 ? '#FC4E2A':
+        efficiency > 400 ? '#FD8D3C':
+        efficiency > 500 ? '#FEB24C':
+        efficiency > 600 ? '#FED976':
         '#FFEDA0';
     }
 
@@ -229,7 +282,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', '$
         color: 'white',
         dashArray: '3',
         fillOpacity: 0.7,
-        fillColor: getColor(feature.properties.COD_REG)
+        fillColor: getColor(feature.properties.average)
       };
     }
 
