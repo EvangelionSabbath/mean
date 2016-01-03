@@ -100,7 +100,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', '$
         setTimeout(function() {
           resolve($scope.reports);
           console.log ('Promise resolved.');
-        }, 30000);
+        }, 25000);
 
       });
 
@@ -139,7 +139,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', '$
         var efficiency_sum = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         var avgs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-        for (report=0; report<10000; report++) {
+        for (report=0; report<100; report++) {
 
           var lat = (reports[report].lat).replace(',','.');
           var lng = (reports[report].lng).replace(',','.');
@@ -256,7 +256,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', '$
       return regionCode;
     }
 
-    function getColor(efficiency) {
+    function getColorByEfficiency(efficiency) {
       // if $scope.configuration === 2 ...
       // Il codice regione 12 corrisponde al Lazio
       return efficiency === 0 ? '#BD0026':
@@ -269,11 +269,6 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', '$
         '#FFEDA0';
     }
 
-    function getColorByEfficiency(regionCode) {
-
-
-
-    }
 
     function style(feature) {
       return {
@@ -282,7 +277,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', '$
         color: 'white',
         dashArray: '3',
         fillOpacity: 0.7,
-        fillColor: getColor(feature.properties.average)
+        fillColor: getColorByEfficiency(feature.properties.average)
       };
     }
 
@@ -304,19 +299,31 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', '$
         fillOpacity: 0.7
       });
 
-      //if (!L.Browser.ie && !L.Browser.opera) {
-      //layer.bringToFront();
+      if (!L.Browser.ie && !L.Browser.opera) {
+        layer.bringToFront();
+      }
 
       //info.update(layer.feature.properties);
     }
 
     function resetHighlight(e) {
-      $scope.geojson.resetStyle(e.target);
+      //$scope.geojson.resetStyle(e.target);
       //info.update();
+      var layer = e.target;
+
+      layer.setStyle({
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: 0.7
+      });
     }
+    
 
     function zoomToFeature(e) {
-      //map.fitBounds(e.target.getBounds());
+      
+      map.fitBounds(e.target.getBounds());
     }
 
     // Find existing Report
