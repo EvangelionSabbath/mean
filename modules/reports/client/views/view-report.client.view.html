@@ -1,0 +1,46 @@
+<section ng-controller="ReportsController" ng-init="findOne()">
+  <div class="page-header">
+    <h1 ng-bind="report.city"></h1>
+  </div>
+  <div class="pull-right" ng-show="authentication.user._id == report.user._id">
+    <a class="btn btn-primary" ui-sref="reports.edit({reportId: report._id})">
+      <i class="glyphicon glyphicon-edit"></i>
+    </a>
+    <a class="btn btn-primary" ng-click="remove();">
+      <i class="glyphicon glyphicon-trash"></i>
+    </a>
+  </div>
+<!-- 
+  <small>
+    <em class="text-muted">
+      Posted on
+      <span ng-bind="report.created | date:'mediumDate'"></span>
+      by
+      <span ng-bind="report.user.displayName"></span>
+    </em>
+  </small>
+  -->
+  Latitude:
+  <p class="lead" ng-bind="report.lat"></p> 
+  Longitude:
+  <p class="lead" ng-bind="report.lng"></p>
+  Area:
+  <p class="lead" ng-bind="report.area"></p>
+  Region:
+  <p class="lead" ng-bind="report.region"></p>
+  Province:
+  <p class="lead" ng-bind="report.province"></p>
+  Voltage:
+  <p class="lead" ng-bind="report.voltage"></p>
+  Committed Power:
+  <p class="lead" ng-bind="report.committed_power"></p>
+  Expected:
+  <p class="lead" ng-bind="report.expected"></p>
+  Actual:
+  <p class="lead" ng-bind="report.actual"></p>
+  From:
+  <p class="lead" ng-bind="report.period_from"></p>
+  To:
+  <p class="lead" ng-bind="report.period_to"></p>
+
+</section>

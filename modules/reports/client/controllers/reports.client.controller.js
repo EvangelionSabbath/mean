@@ -110,7 +110,27 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
 
         var report;
         var marker;
-        var markers = [];
+        
+        $scope.piemonteMarkers = [];
+        $scope.aostaMarkers = [];
+        $scope.lombardiaMarkers = [];
+        $scope.trentinoMarkers = [];
+        $scope.venetoMarkers = [];
+        $scope.friuliMarkers = [];
+        $scope.liguriaMarkers = [];
+        $scope.emiliaMarkers = [];
+        $scope.toscanaMarkers = [];
+        $scope.umbriaMarkers = [];
+        $scope.marcheMarkers = [];
+        $scope.lazioMarkers = [];
+        $scope.abruzzoMarkers = [];
+        $scope.moliseMarkers = [];
+        $scope.campaniaMarkers = [];
+        $scope.pugliaMarkers = [];
+        $scope.basilicataMarkers = [];
+        $scope.calabriaMarkers = [];
+        $scope.siciliaMarkers = [];
+        $scope.sardegnaMarkers = [];
 
         var icons = {
           green: {
@@ -139,7 +159,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
         var efficiency_sum = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         var avgs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-        for (report=0; report<100; report++) {
+        for (report=0; report<16000; report++) {
 
           var lat = (reports[report].lat).replace(',','.');
           var lng = (reports[report].lng).replace(',','.');
@@ -183,7 +203,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
           }
 
           if (month === 1) {
-            markers[report] = marker;
+            addMarkerToRegion(indexRegions, report, marker);
           }
          
         }
@@ -196,8 +216,6 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
           }
         }
         console.log(avgs);
-
-
 
         $http.get('modules/core/client/geoJson/regioni.geojson').success(function(data, status) {
           for (var i = 0; i < avgs.length; i++){
@@ -213,16 +231,9 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
             }
           });
         });
-        
 
         $scope.$apply(function(){
-          $scope.markers = markers;
-          /*$scope.geojson = {
-            data: $scope.geojsonData,
-            style: style,
-            onEachFeature: onEachFeature
-          };
-          console.log('SCOPE GEOJSON: ' + $scope.geojson);*/
+          $scope.markers = [];;
         });
 
       });
@@ -254,6 +265,31 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
         case "Sardegna": regionCode = 20; break;
       }
       return regionCode;
+    }
+
+    function addMarkerToRegion(indexRegions, report, marker){
+      switch (indexRegions){
+        case 1: $scope.piemonteMarkers[report] = marker; break;
+        case 2: $scope.aostaMarkers[report] = marker; break;
+        case 3: $scope.lombardiaMarkers[report] = marker; break;
+        case 4: $scope.trentinoMarkers[report] = marker; break;
+        case 5: $scope.venetoMarkers[report] = marker; break;
+        case 6: $scope.friuliMarkers[report] = marker; break;
+        case 7: $scope.liguriaMarkers[report] = marker; break;
+        case 8: $scope.emiliaMarkers[report] = marker; break;
+        case 9: $scope.toscanaMarkers[report] = marker; break;
+        case 10: $scope.umbriaMarkers[report] = marker; break;
+        case 11: $scope.marcheMarkers[report] = marker; break;
+        case 12: $scope.lazioMarkers[report] = marker; break;
+        case 13: $scope.abruzzoMarkers[report] = marker; break;
+        case 14: $scope.moliseMarkers[report] = marker; break;
+        case 15: $scope.campaniaMarkers[report] = marker; break;
+        case 16: $scope.pugliaMarkers[report] = marker; break;
+        case 17: $scope.basilicataMarkers[report] = marker; break;
+        case 18: $scope.calabriaMarkers[report] = marker; break;
+        case 19: $scope.siciliaMarkers[report] = marker; break;
+        case 20: $scope.sardegnaMarkers[report] = marker; break;
+      }
     }
 
     function getColorByEfficiency(efficiency) {
@@ -325,6 +361,34 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
       leafletData.getMap().then(function(map) {
         map.fitBounds(e.target.getBounds());
       });    
+      
+      updateMarkersByRegionCode(e.target.feature.properties.COD_REG);
+      
+    }
+
+    function updateMarkersByRegionCode(regionCode) {
+      switch (regionCode){
+        case 1: $scope.markers = $scope.piemonteMarkers; break;
+        case 2: $scope.markers = $scope.aostaMarkers; break;
+        case 3: $scope.markers = $scope.lombardiaMarkers; break;
+        case 4: $scope.markers = $scope.trentinoMarkers; break;
+        case 5: $scope.markers = $scope.venetoMarkers; break;
+        case 6: $scope.markers = $scope.friuliMarkers; break;
+        case 7: $scope.markers = $scope.liguriaMarkers; break;
+        case 8: $scope.markers = $scope.emiliaMarkers; break;
+        case 9: $scope.markers = $scope.toscanaMarkers; break;
+        case 10: $scope.markers = $scope.umbriaMarkers; break;
+        case 11: $scope.markers = $scope.marcheMarkers; break;
+        case 12: $scope.markers = $scope.lazioMarkers; break;
+        case 13: $scope.markers = $scope.abruzzoMarkers; break;
+        case 14: $scope.markers = $scope.moliseMarkers; break;
+        case 15: $scope.markers = $scope.campaniaMarkers; break;
+        case 16: $scope.markers = $scope.pugliaMarkers; break;
+        case 17: $scope.markers = $scope.basilicataMarkers; break;
+        case 18: $scope.markers = $scope.calabriaMarkers; break;
+        case 19: $scope.markers = $scope.siciliaMarkers; break;
+        case 20: $scope.markers = $scope.sardegnaMarkers; break;
+      }
     }
 
     // Find existing Report
