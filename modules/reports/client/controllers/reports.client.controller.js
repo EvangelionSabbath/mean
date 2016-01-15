@@ -184,7 +184,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
               lat: parseFloat(lat), 
               lng: parseFloat(lng), 
               focus: true, 
-              message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency
+              message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency,
               draggable: true, 
               icon: icons.green, 
               month: month, 
@@ -196,7 +196,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
               lat: parseFloat(lat), 
               lng: parseFloat(lng), 
               focus: true, 
-              message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency
+              message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency,
               draggable: true, 
               icon: icons.red 
             };
@@ -233,7 +233,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
         });
 
         $scope.$apply(function(){
-          $scope.markers = [];;
+          $scope.markers = [];
         });
 
       });
