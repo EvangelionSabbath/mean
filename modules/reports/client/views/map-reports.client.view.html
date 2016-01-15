@@ -1,5 +1,7 @@
 <section ng-controller="ReportsController" ng-init="findMap(); geojsonData = geojsonData">
 
+
+
     <div class="page-header">
         <h1>Sites efficiency</h1>
     </div>
@@ -22,9 +24,20 @@
         <leaflet  id ="map" geojson="geojson" center="center" markers="markers" height="480px" width="100%"></leaflet>
     </div>
 
+
+
+    <pre>Selected month is: <em>{{dt | date:'fullDate' }}</em></pre>
+
+    <h4>pick a month!</h4>
+    <div style="display:inline-block; min-height:290px;">
+      <datepicker ng-model="dt" min-date="minDate" max-date="maxDate" init-date="initDate" min-mode="month" show-weeks="false" datepicker-mode="'month'" class="well well-sm" custom-class="getDayClass(date, mode)"></datepicker>
+   
+
+
 </section>
 
 <style>
+        
         .red {
             border-radius: 120px;
             opacity: .25;

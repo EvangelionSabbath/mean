@@ -92,6 +92,81 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
     // Shows the retrieved list of Reports in map
     $scope.findMap = function () {
 
+
+
+      $scope.today = function() {
+        $scope.dt = new Date("2012-01");
+      };
+      $scope.today();
+
+      $scope.clear = function() {
+        $scope.dt = null;
+      };
+
+      // Disable weekend selection
+      $scope.disabled = function(date, mode) {
+        return mode === 'day' && (date.getDay() === 0 || date.getDay() === 6);
+      };
+
+      $scope.toggleMin = function() {
+        $scope.minDate = $scope.minDate ? null : new Date("2012-01-01");
+      };
+
+    
+
+      $scope.toggleMin();
+      $scope.maxDate = new Date("2012-12-31");
+      $scope.initDate = new Date("2012-01-01");
+
+
+      $scope.setDate = function(year, month, day) {
+        $scope.dt = new Date(year, month, day);
+      };
+
+      $scope.dateOptions = {
+        formatYear: 'yy',
+        startingDay: 1
+      };
+
+      $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
+      $scope.format = $scope.formats[0];
+      $scope.altInputFormats = ['M!/d!/yyyy'];
+
+      var tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      var afterTomorrow = new Date();
+      afterTomorrow.setDate(tomorrow.getDate() + 1);
+      $scope.events =
+      [
+        {
+          date: tomorrow,
+          status: 'full'
+        },
+        {
+          date: afterTomorrow,
+          status: 'partially'
+        }
+      ];
+      $scope.getDayClass = function(date, mode) {
+        if (mode === 'day') {
+          var dayToCheck = new Date(date).setHours(0,0,0,0);
+
+          for (var i = 0; i < $scope.events.length; i++) {
+            var currentDay = new Date($scope.events[i].date).setHours(0,0,0,0);
+
+            if (dayToCheck === currentDay) {
+              return $scope.events[i].status;
+            }
+          }
+        }
+
+        return '';
+      };
+
+
+
+
+
       var configuration = 'regions';
       var reportsLoaded = new Promise(function(resolve, reject) {
         
@@ -100,7 +175,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
         setTimeout(function() {
           resolve($scope.reports);
           console.log ('Promise resolved.');
-        }, 25000);
+        }, 10000);
 
       });
 
@@ -159,7 +234,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
         var efficiency_sum = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         var avgs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-        for (report=0; report<16000; report++) {
+        for (report=0; report<1000; report++) { //16000
 
           var lat = (reports[report].lat).replace(',','.');
           var lng = (reports[report].lng).replace(',','.');
