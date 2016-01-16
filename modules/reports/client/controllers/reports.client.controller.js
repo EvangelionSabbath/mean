@@ -323,15 +323,6 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
               position: 'bottomleft',
               colors: [ '#000000', '#800000', '#FF2200', '#D2691E', '#FFD700', '#4dc22d' ],
               labels: [ 'Efficiency <= 0', 'Efficiency > 0', 'Efficiency > 50', 'Efficiency > 150', 'Efficiency > 250', 'Efficiency > 300' ]
-
-            /*      return efficiency === 0 ? '#000000': // nero
-        efficiency < 0 ? '#000000': // nero
-        efficiency > 300 ? '#4dc22d': //verde
-        efficiency > 250 ? '#FFD700': //giallo
-        efficiency > 150 ? '#D2691E': //arancione
-        efficiency > 50 ? '#FF2200': // rosso
-        efficiency > 0 ? '#800000': // rosso scuro
-        '#FFFFFF';*/
         }
           });
         });
