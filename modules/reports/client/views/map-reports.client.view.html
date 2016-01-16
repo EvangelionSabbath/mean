@@ -22,7 +22,7 @@
     </div>
 
     <div ng-show="markers != null">
-        <leaflet  id ="map" geojson="geojson" center="center" markers="markers" height="480px" width="100%"></leaflet>
+        <leaflet  id ="map" legend="legend" geojson="geojson" center="center" markers="markers" height="480px" width="100%"></leaflet>
     </div>
 
 
@@ -38,6 +38,24 @@
 </section>
 
 <style>
+
+        .legend {
+            font: 14px/16px Arial, Helvetica, sans-serif;
+            background: rgba(255,255,255, 0.9);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            padding: 6px 8px;
+            width: 180px;
+            line-height: 18px;
+            color: #555;
+        }
+        .legend i {
+            width: 16px;
+            height: 16px;
+            float: left;
+            margin-right: 8px;
+            opacity: 0.7;
+        }
         
         .red {
 
@@ -233,18 +251,5 @@
         .info h4 {
             margin: 0 0 5px;
             color: #777;
-        }
-
-        .legend {
-            text-align: left;
-            line-height: 18px;
-            color: #555;
-        }
-        .legend i {
-            width: 18px;
-            height: 18px;
-            float: left;
-            margin-right: 8px;
-            opacity: 0.7;
         }
 </style>
