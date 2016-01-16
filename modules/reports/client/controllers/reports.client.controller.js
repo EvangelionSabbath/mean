@@ -207,24 +207,25 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
         $scope.siciliaMarkers = [];
         $scope.sardegnaMarkers = [];
 
+        $scope.zoom = getZoom();
         var icons = {
           green: {
             type: 'div',
-            iconSize: [10, 10],
+            iconSize: [13, 13],
             className: 'green',
             iconAnchor:  [5, 5]
           },
 
           orange: {
             type: 'div',
-            iconSize: [10, 10],
+            iconSize: [13, 13],
             className: 'orange',
             iconAnchor:  [5, 5]
           },
 
           red: {
             type: 'div',
-            iconSize: [10, 10],
+            iconSize: [13, 13],
             className: 'red',
             iconAnchor:  [5, 5]
           }
@@ -234,7 +235,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
         var efficiency_sum = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         var avgs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-        for (report=0; report<1000; report++) { //16000
+        for (report=0; report<16000; report++) { //16000
 
           var lat = (reports[report].lat).replace(',','.');
           var lng = (reports[report].lng).replace(',','.');
@@ -255,16 +256,31 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
           efficiency_sum[indexRegions - 1]++;
 
           if (efficiency > 0) {
-            marker = { 
-              lat: parseFloat(lat), 
-              lng: parseFloat(lng), 
-              focus: true, 
-              message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency,
-              draggable: true, 
-              icon: icons.green, 
-              month: month, 
-              year: year 
-            };
+            
+            if (efficiency > 50) {
+              marker = { 
+                lat: parseFloat(lat), 
+                lng: parseFloat(lng), 
+                focus: true, 
+                message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency,
+                draggable: true, 
+                icon: icons.green, 
+                month: month, 
+                year: year 
+              };
+            }
+            else {
+              marker = { 
+                lat: parseFloat(lat), 
+                lng: parseFloat(lng), 
+                focus: true, 
+                message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency,
+                draggable: true, 
+                icon: icons.orange, 
+                month: month, 
+                year: year 
+              };
+            }         
           }
           else {
             marker = { 
@@ -370,14 +386,14 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
     function getColorByEfficiency(efficiency) {
       // if $scope.configuration === 2 ...
       // Il codice regione 12 corrisponde al Lazio
-      return efficiency === 0 ? '#BD0026':
-        efficiency < 0 ? '#BD0026':
-        efficiency > 200 ? '#E31A1C':
-        efficiency > 300 ? '#FC4E2A':
-        efficiency > 400 ? '#FD8D3C':
-        efficiency > 500 ? '#FEB24C':
-        efficiency > 600 ? '#FED976':
-        '#FFEDA0';
+      return efficiency === 0 ? '#000000': // nero
+        efficiency < 0 ? '#000000': // nero
+        efficiency > 300 ? '#4dc22d': //verde
+        efficiency > 250 ? '#FFD700': //giallo
+        efficiency > 150 ? '#D2691E': //arancione
+        efficiency > 50 ? '#FF2200': // rosso
+        efficiency > 0 ? '#800000': // rosso scuro
+        '#FFFFFF';
     }
 
 
@@ -439,6 +455,13 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
       
       updateMarkersByRegionCode(e.target.feature.properties.COD_REG);
       
+    }
+
+    function getZoom() {
+      leafletData.getMap().then(function(map) {
+        var zoom = map.getZoom();
+        return zoom;
+      });    
     }
 
     function updateMarkersByRegionCode(regionCode) {
