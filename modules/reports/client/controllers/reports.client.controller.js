@@ -195,10 +195,11 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
 
         $scope.zoom = getZoom();
 
-
+        var selectedMonth = $scope.dt.getMonth();
         //function create map 
         $scope.$watch('date', function() {
-          createMap(reports, $scope.dt.getMonth());
+          var selectedMonth = $scope.dt.getMonth();
+          createMap(reports, selectedMonth);
         });
 
 
@@ -211,129 +212,129 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
 
 
 
-    function createMap(reports, month){
-        var report;
-        var marker;
-        var icons = {
-          green: {
-            type: 'div',
-            iconSize: [13, 13],
-            className: 'green',
-            iconAnchor:  [5, 5]
-          },
+    function createMap(reports, selectedMonth){
+      var report;
+      var marker;
+      var icons = {
+        green: {
+          type: 'div',
+          iconSize: [13, 13],
+          className: 'green',
+          iconAnchor:  [5, 5]
+        },
 
-          orange: {
-            type: 'div',
-            iconSize: [13, 13],
-            className: 'orange',
-            iconAnchor:  [5, 5]
-          },
+        orange: {
+          type: 'div',
+          iconSize: [13, 13],
+          className: 'orange',
+          iconAnchor:  [5, 5]
+        },
 
-          red: {
-            type: 'div',
-            iconSize: [13, 13],
-            className: 'red',
-            iconAnchor:  [5, 5]
-          }
-        };
-        //medie regionali
-        var efficiency_regions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        var efficiency_sum = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        var avgs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        red: {
+          type: 'div',
+          iconSize: [13, 13],
+          className: 'red',
+          iconAnchor:  [5, 5]
+        }
+      };
+      //medie regionali
+      var efficiency_regions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      var efficiency_sum = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+      var avgs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
-        for (report=0; report<16000; report++) { //16000
+      for (report=0; report<16000; report++) { //16000
 
-          var lat = (reports[report].lat).replace(',','.');
-          var lng = (reports[report].lng).replace(',','.');
+        var lat = (reports[report].lat).replace(',','.');
+        var lng = (reports[report].lng).replace(',','.');
+        
+        var expected = reports[report].expected;
+        var actual = reports[report].actual;
+        var efficiency = expected - actual;
+        
+        var period_from = reports[report].period_from;
+        var date = new Date(period_from);
+        var year = date.getYear();
+        var month = date.getMonth() + 1;
+
+        //aggiungo report ai vettori
+        var indexRegions = getRegionCode(reports[report].region);
+        //console.log("------------indici " + indexRegions);
+        efficiency_regions[indexRegions - 1] = efficiency_regions[indexRegions - 1] + efficiency;
+        efficiency_sum[indexRegions - 1]++;
+
+        if (efficiency > 0) {
           
-          var expected = reports[report].expected;
-          var actual = reports[report].actual;
-          var efficiency = expected - actual;
-          
-          var period_from = reports[report].period_from;
-          var date = new Date(period_from);
-          var year = date.getYear();
-          var month = date.getMonth() + 1;
-
-          //aggiungo report ai vettori
-          var indexRegions = getRegionCode(reports[report].region);
-          //console.log("------------indici " + indexRegions);
-          efficiency_regions[indexRegions - 1] = efficiency_regions[indexRegions - 1] + efficiency;
-          efficiency_sum[indexRegions - 1]++;
-
-          if (efficiency > 0) {
-            
-            if (efficiency > 50) {
-              marker = { 
-                lat: parseFloat(lat), 
-                lng: parseFloat(lng), 
-                focus: true, 
-                message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Data: " + date.toDateString().substring(4,7) + " " + date.toDateString().substring(10,15) +  "<br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency,
-                draggable: true, 
-                icon: icons.green, 
-                month: month, 
-                year: year 
-              };
-            }
-            else {
-              marker = { 
-                lat: parseFloat(lat), 
-                lng: parseFloat(lng), 
-                focus: true, 
-                message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Data: " + date.toDateString().substring(4,7) + " " + date.toDateString().substring(10,15) +  "<br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency,
-                draggable: true, 
-                icon: icons.orange, 
-                month: month, 
-                year: year 
-              };
-            }         
+          if (efficiency > 50) {
+            marker = { 
+              lat: parseFloat(lat), 
+              lng: parseFloat(lng), 
+              focus: true, 
+              message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Data: " + date.toDateString().substring(4,7) + " " + date.toDateString().substring(10,15) + "<br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency,
+              draggable: true, 
+              icon: icons.green, 
+              month: month, 
+              year: year 
+            };
           }
           else {
             marker = { 
               lat: parseFloat(lat), 
               lng: parseFloat(lng), 
               focus: true, 
-              message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Data: " + date.toDateString().substring(4,7) + " " + date.toDateString().substring(10,15) +  "<br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency,
+              message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Data: " + date.toDateString().substring(4,7) + " " + date.toDateString().substring(10,15) + "<br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency,
               draggable: true, 
-              icon: icons.red 
+              icon: icons.orange, 
+              month: month, 
+              year: year 
             };
-          }
-          //console.log(month);
-          if (month ===  $scope.dt.getMonth() + 1) {
-            addMarkerToRegion(indexRegions, report, marker);
-         }
-         
+          }         
         }
-        //stampa di prova per gli array
-        console.log(efficiency_regions);
-        console.log(efficiency_sum);
+        else {
+          marker = { 
+            lat: parseFloat(lat), 
+            lng: parseFloat(lng), 
+            focus: true, 
+            message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Data: " + date.toDateString().substring(4,7) + " " + date.toDateString().substring(10,15) + "<br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency,
+            draggable: true, 
+            icon: icons.red 
+          };
+        }
+        //console.log(month);
+        if (month === $scope.dt.getMonth() + 1) {
+          addMarkerToRegion(indexRegions, report, marker);
+        }
+       
+      }
+      //stampa di prova per gli array
+      console.log(efficiency_regions);
+      console.log(efficiency_sum);
+      for (var i = 0; i < avgs.length; i++){
+        if (efficiency_sum[i] !== 0) {
+          avgs[i] = efficiency_regions[i] / efficiency_sum[i];
+        }
+      }
+      console.log(avgs);
+
+      $http.get('modules/core/client/geoJson/regioni.geojson').success(function(data, status) {
         for (var i = 0; i < avgs.length; i++){
-          if (efficiency_sum[i] !== 0) {
-            avgs[i] = efficiency_regions[i] / efficiency_sum[i];
-          }
+          console.log(data.features[i].properties);
+          data.features[i].properties.average = avgs[i];
+          console.log(data.features[i].properties);
         }
-        console.log(avgs);
+        angular.extend($scope, {
+          geojson: {
+            data: data,
+            style: style,
+            onEachFeature: onEachFeature
+          },
 
-        $http.get('modules/core/client/geoJson/regioni.geojson').success(function(data, status) {
-          for (var i = 0; i < avgs.length; i++){
-            console.log(data.features[i].properties);
-            data.features[i].properties.average = avgs[i];
-            console.log(data.features[i].properties);
+          legend: {
+            position: 'bottomleft',
+            colors: [ '#000000', '#800000', '#FF2200', '#D2691E', '#FFD700', '#4dc22d' ],
+            labels: [ 'Efficiency <= 0', 'Efficiency > 0', 'Efficiency > 50', 'Efficiency > 150', 'Efficiency > 250', 'Efficiency > 300' ]
           }
-          angular.extend($scope, {
-            geojson: {
-              data: data,
-              style: style,
-              onEachFeature: onEachFeature
-            },
-
-            legend: {
-              position: 'bottomleft',
-              colors: [ '#000000', '#800000', '#FF2200', '#D2691E', '#FFD700', '#4dc22d' ],
-              labels: [ 'Efficiency <= 0', 'Efficiency > 0', 'Efficiency > 50', 'Efficiency > 150', 'Efficiency > 250', 'Efficiency > 300' ]
-            }
-          });
         });
+      });
     }
 
 
