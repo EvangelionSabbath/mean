@@ -132,21 +132,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
       $scope.format = $scope.formats[0];
       $scope.altInputFormats = ['M!/d!/yyyy'];
 
-      var tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      var afterTomorrow = new Date();
-      afterTomorrow.setDate(tomorrow.getDate() + 1);
-      $scope.events =
-      [
-        {
-          date: tomorrow,
-          status: 'full'
-        },
-        {
-          date: afterTomorrow,
-          status: 'partially'
-        }
-      ];
+
       $scope.getDayClass = function(date, mode) {
         if (mode === 'day') {
           var dayToCheck = new Date(date).setHours(0,0,0,0);
@@ -155,15 +141,18 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
             var currentDay = new Date($scope.events[i].date).setHours(0,0,0,0);
 
             if (dayToCheck === currentDay) {
+              console.log($scope.events[i].status);
               return $scope.events[i].status;
             }
           }
         }
-
         return '';
       };
 
- 
+      $scope.$watch('dt', function() {
+        console.log($scope.dt.getMonth()); //selezioniamo solo reports relativi al mese scelto
+      });
+
 
       var configuration = 'regions';
       var reportsLoaded = new Promise(function(resolve, reject) {
@@ -260,7 +249,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
                 lat: parseFloat(lat), 
                 lng: parseFloat(lng), 
                 focus: true, 
-                message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency,
+                message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Data: " + reports[report].period_from.substring(0,7) + "<br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency,
                 draggable: true, 
                 icon: icons.green, 
                 month: month, 
@@ -272,7 +261,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
                 lat: parseFloat(lat), 
                 lng: parseFloat(lng), 
                 focus: true, 
-                message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency,
+                message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Data: " + reports[report].period_from.substring(0,7) + "<br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency,
                 draggable: true, 
                 icon: icons.orange, 
                 month: month, 
@@ -323,7 +312,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
               position: 'bottomleft',
               colors: [ '#000000', '#800000', '#FF2200', '#D2691E', '#FFD700', '#4dc22d' ],
               labels: [ 'Efficiency <= 0', 'Efficiency > 0', 'Efficiency > 50', 'Efficiency > 150', 'Efficiency > 250', 'Efficiency > 300' ]
-        }
+            }
           });
         });
 
@@ -448,6 +437,10 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
         dashArray: '3',
         fillOpacity: 0.7
       });
+    }
+
+    function getDate(){
+
     }
     
 
