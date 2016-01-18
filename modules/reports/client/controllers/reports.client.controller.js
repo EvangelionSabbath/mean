@@ -195,16 +195,14 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
 
         $scope.zoom = getZoom();
 
-        var selectedMonth = $scope.dt.getMonth();
         //function create map 
-        $scope.$watch('date', function() {
-          var selectedMonth = $scope.dt.getMonth();
-          createMap(reports, selectedMonth);
+        $scope.$watch('dt', function() {
+          createMap(reports, $scope.dt.getMonth());
         });
 
 
         $scope.$apply(function(){
-          $scope.markers = [];
+          $scope.markers = {};
         });
 
       });
@@ -213,6 +211,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
 
 
     function createMap(reports, selectedMonth){
+
       var report;
       var marker;
       var icons = {
@@ -306,14 +305,14 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
        
       }
       //stampa di prova per gli array
-      console.log(efficiency_regions);
-      console.log(efficiency_sum);
+      //console.log(efficiency_regions);
+      //console.log(efficiency_sum);
       for (var i = 0; i < avgs.length; i++){
         if (efficiency_sum[i] !== 0) {
           avgs[i] = efficiency_regions[i] / efficiency_sum[i];
         }
       }
-      console.log(avgs);
+      //console.log(avgs);
 
       $http.get('modules/core/client/geoJson/regioni.geojson').success(function(data, status) {
         for (var i = 0; i < avgs.length; i++){
