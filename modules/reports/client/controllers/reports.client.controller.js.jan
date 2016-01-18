@@ -170,7 +170,8 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
 
         //for (var report in reports) {
 
-        
+        var report;
+        var marker;
         
         $scope.piemonteMarkers = [];
         $scope.aostaMarkers = [];
@@ -194,26 +195,6 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
         $scope.sardegnaMarkers = [];
 
         $scope.zoom = getZoom();
-
-
-        //function create map 
-        $scope.$watch('date', function() {
-          createMap(reports, $scope.dt.getMonth());
-        });
-
-
-        $scope.$apply(function(){
-          $scope.markers = [];
-        });
-
-      });
-    }; // end of findMap()
-
-
-
-    function createMap(reports, month){
-        var report;
-        var marker;
         var icons = {
           green: {
             type: 'div',
@@ -236,6 +217,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
             iconAnchor:  [5, 5]
           }
         };
+//---------------------------FUNCTION
         //medie regionali
         var efficiency_regions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         var efficiency_sum = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -299,7 +281,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
             };
           }
           //console.log(month);
-          if (month ===  $scope.dt.getMonth() + 1) {
+          if (month === 1) {
             addMarkerToRegion(indexRegions, report, marker);
          }
          
@@ -334,8 +316,13 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
             }
           });
         });
-    }
+//-------------------------------------FUNCTION END
+        $scope.$apply(function(){
+          $scope.markers = [];
+        });
 
+      });
+    }; // end of findMap()
 
 
     function getRegionCode(regionString){
