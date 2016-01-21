@@ -5,33 +5,50 @@
     <div class="page-header">
         <h1>Sites efficiency</h1>
     </div>
-
     <div ng-show="markers == null" class="container" height="480px" width="100%">
     
         <div class="row">
-            <h1 class="h1Loading"> LOADING... </h1>
             <div id="loading">
                 <ul class="bokeh">
-                    <li>w</li>
-                    <li>a</li>
-                    <li>i</li>
-                    <li>t</li>
+                    <li><span class="bokeh-round">w</span></li>
+                    <li><span class="bokeh-round">a</span></li>
+                    <li><span class="bokeh-round">i</span></li>
+                    <li><span class="bokeh-round">t</span></li>
                 </ul>
             </div>
         </div>
     </div>
 
     <div ng-show="markers != null">
-        <leaflet  id ="map" legend="legend" geojson="geojson" center="center" markers="markers" height="480px" width="100%"></leaflet>
+
+        <leaflet  
+            id ="map" 
+            legend="legend" 
+            geojson="geojson" 
+            center="center" 
+            markers="markers" 
+            height="480px" 
+            width="100%">
+
+            <datepicker 
+                class="datepicker"
+                style="position:absolute; top:0; right:0; z-index: 9; background-color: transparent;" 
+                ng-model="dt" 
+                min-date="minDate" 
+                max-date="maxDate" 
+                init-date="initDate" 
+                min-mode="month" 
+                show-weeks="false" 
+                datepicker-mode="'month'" 
+                class="well well-sm" 
+                custom-class="getDayClass(date, mode)">
+            </datepicker>
+
+        </leaflet>
+
     </div>
 
-
-
     <pre>Selected month is: <em>{{dt | date:'fullDate' }}</em></pre>
-
-    <h4>pick a month!</h4>
-    <div style="display:inline-block; min-height:290px;">
-      <datepicker ng-model="dt" min-date="minDate" max-date="maxDate" init-date="initDate" min-mode="month" show-weeks="false" datepicker-mode="'month'" class="well well-sm" custom-class="getDayClass(date, mode)"></datepicker>
    
 
 
@@ -113,7 +130,7 @@
         }
         .bokeh li:nth-child(1) {
             animation: 
-                4s linear 0s normal none infinite running rota, 
+                10s linear 0s normal none infinite running rota, 
                 8s ease-in-out 0s alternate none infinite running;
             
             background-color: #d23f31;
@@ -131,7 +148,7 @@
         }
         .bokeh li:nth-child(2) {
             animation: 
-                3,5s linear 0s normal none infinite running rota, 
+            9s linear 0s normal none infinite running rota, 
                 8s ease-in-out 0s alternate none infinite running;
             
             background-color: #57A429;
@@ -149,7 +166,7 @@
         }
         .bokeh li:nth-child(3) {
             animation: 
-                3s linear 0s normal none infinite running rota, 
+                8.1s linear 0s normal none infinite running rota, 
                 8s ease-in-out 0s alternate none infinite running;
             
             background-color: #D28031;
@@ -165,9 +182,10 @@
             top: 0;
             transform-origin: 50% 250% 0;
         }
+
         .bokeh li:nth-child(4) {
             animation: 
-                2,5s linear 0s normal none infinite running rota, 
+                7.3s linear 0s normal none infinite running rota, 
                 8s ease-in-out 0s alternate none infinite running;
             
             background-color: #38818F;
@@ -184,15 +202,15 @@
             transform-origin: 50% 250% 0;
         }
 
-        .h1Loading {
-            font-weight: bold;
-            font-size: 16px;
-            height: 1em;
-            margin: 0 auto;
-            position: relative;
-            top: 150px;
-            width: 8em;
-            z-index: 100;
+        .bokeh-round {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            height: 100%;
+            width: 100%;
+            text-align: center;
+            margin-top: -22px;
+            color: #FFF;
         }
 
         @keyframes opa {
@@ -253,5 +271,12 @@
         .info h4 {
             margin: 0 0 5px;
             color: #777;
+        }
+
+        .datepicker .btn-default {
+            background: #d23f31;
+            color: #fff;
+            text-shadow: 0 0px 0 #fff;
+            width: 100px;
         }
 </style>
