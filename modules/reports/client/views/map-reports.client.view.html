@@ -29,29 +29,25 @@
             markers="markers" 
             height="480px" 
             width="100%">
-
-            <datepicker 
-                class="datepicker"
-                style="position:absolute; top:0; right:0; z-index: 9; background-color: transparent;" 
-                ng-model="dt" 
-                min-date="minDate" 
-                max-date="maxDate" 
-                init-date="initDate" 
-                min-mode="month" 
-                show-weeks="false" 
-                datepicker-mode="'month'" 
-                class="well well-sm" 
-                custom-class="getDayClass(date, mode)">
-            </datepicker>
-
         </leaflet>
+
+        <datepicker 
+            class="datepicker"
+            style="position:absolute; top:180px; right:120px; z-index: 9; background-color: transparent;" 
+            ng-model="dt" 
+            min-date="minDate" 
+            max-date="maxDate" 
+            init-date="initDate" 
+            min-mode="month" 
+            show-weeks="false" 
+            datepicker-mode="'month'" 
+            class="well well-sm" 
+            custom-class="getDayClass(date, mode)">
+        </datepicker>
 
     </div>
 
     <pre>Selected month is: <em>{{dt | date:'fullDate' }}</em></pre>
-   
-
-
 </section>
 
 <style>

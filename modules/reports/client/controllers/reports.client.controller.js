@@ -155,6 +155,9 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
       var reportsLoaded = new Promise(function(resolve, reject) {
 
         $scope.reports = Reports.query();
+        $http.get('modules/core/client/geoJson/regioni.geojson').success(function(data, status) {
+          $scope.geojsonData = data;
+        });
 
         setTimeout(function() {
           resolve($scope.reports);
@@ -209,25 +212,22 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
           reports = chooseReports($scope.dt.getMonth() + 1);
           console.log("lunghezza array in: " + reports.length);
           var avgs = createMap(reports, $scope.dt.getMonth());
-          $http.get('modules/core/client/geoJson/regioni.geojson').success(function(data, status) {
-            for (var i = 0; i < avgs.length; i++) {
-              //console.log(data.features[i].properties);
-              data.features[i].properties.average = avgs[i];
-              //console.log(data.features[i].properties);
+          for (var i = 0; i < avgs.length; i++) {
+            //console.log(data.features[i].properties);
+            $scope.geojsonData.features[i].properties.average = avgs[i];
+            //console.log(data.features[i].properties);
+          }
+          angular.extend($scope, {
+            geojson: {
+              data: $scope.geojsonData,
+              style: style,
+              onEachFeature: onEachFeature
+            },
+            center: {
+              lat: 43,
+              lng: 14,
+              zoom: 5
             }
-            angular.extend($scope, {
-              geojson: {
-                data: data,
-                style: style,
-                onEachFeature: onEachFeature
-              },
-              center: {
-                lat: 43,
-                lng: 14,
-                zoom: 5
-              }
-
-            });
           });
         });
 
