@@ -18,6 +18,11 @@ angular.module('reports').config(['$stateProvider',
         url: '/map',
         templateUrl: 'modules/reports/client/views/map-reports.client.view.html'
       })
+      .state('reports.chart', {
+        url: '/chart',
+        templateUrl: 'modules/reports/client/views/chart-reports.client.view.html'
+      })
+
       .state('reports.create', {
         url: '/create',
         templateUrl: 'modules/reports/client/views/create-report.client.view.html',

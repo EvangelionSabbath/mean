@@ -2,7 +2,11 @@
 
 // Reports controller
 angular.module('reports').controller('ReportsController', ['$scope', '$http', 'leafletData', '$stateParams', '$location', 'Authentication', 'Reports',
+ 
   function($scope, $http, leafletData, $stateParams, $location, Authentication, Reports) {
+     
+
+
     $scope.center = {};
     angular.extend($scope, {
       center: {
@@ -19,17 +23,16 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
 
     $scope.authentication = Authentication;
 
-    // Create new Report
+
+    // Crea un nuovo Report
     $scope.create = function(isValid) {
       $scope.error = null;
 
       if (!isValid) {
         $scope.$broadcast('show-errors-check-validity', 'reportForm');
-
         return false;
       }
 
-      // Create new Report object
       var report = new Reports({
         lat: this.lat,
         lng: this.lng,
@@ -37,89 +40,122 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
         voltage: this.voltage
       });
 
-      // Redirect after save
       report.$save(function(response) {
         $location.path('reports/' + response._id);
-        // Clear form fields
         $scope.lat = '';
         $scope.lng = '';
         $scope.city = '';
         $scope.voltage = '';
       },
-        function(errorResponse) {
-          $scope.error = errorResponse.data.message;
-        });
+      function(errorResponse) {
+        $scope.error = errorResponse.data.message;
+      });
     };
 
-    // Remove existing Report
+
+    // Rimuove un Report esistente
     $scope.remove = function(report) {
+
       if (report) {
         report.$remove();
-
         for (var i in $scope.reports) {
           if ($scope.reports[i] === report) {
             $scope.reports.splice(i, 1);
           }
         }
-      } else {
+      } 
+
+      else {
         $scope.report.$remove(function() {
           $location.path('reports');
         });
       }
+
     };
 
-    // Update existing Report
+
+    // Aggiorna un Report esistente
     $scope.update = function(isValid) {
       $scope.error = null;
 
       if (!isValid) {
         $scope.$broadcast('show-errors-check-validity', 'reportForm');
-
         return false;
       }
 
       var report = $scope.report;
 
       report.$update(function() {
-        $location.path('reports/' + report._id);
-      }, function(errorResponse) {
+        $location.path('reports/' + report._id);  
+      }, 
+      function(errorResponse) {
         $scope.error = errorResponse.data.message;
       });
+
     };
 
-    // Find a list of Reports
+
+    // Recupera una lista di Reports
     $scope.find = function() {
       $scope.reports = Reports.query();
     };
 
-    // Shows the retrieved list of Reports in map
-    $scope.findMap = function() {
 
-      $scope.today = function() {
-        $scope.dt = new Date("2012-01");
-      };
+    // Restituisce la data odierna
+    $scope.today = function() {
+      $scope.dt = new Date("2012-01");
+    };
+    
+
+    // Rimuove la data
+    $scope.clear = function() {
+      $scope.dt = null;
+    };
+
+
+    // Disabilita la selezione weekend
+    $scope.disabled = function(date, mode) {
+      return mode === 'day' && (date.getDay() === 0 || date.getDay() === 6);
+    };
+
+
+    // Imposta la data di partenza
+    $scope.toggleMin = function() {
+      $scope.minDate = $scope.minDate ? null : new Date("2012-01-01");
+    };
+
+
+    // Imposta la data
+    $scope.setDate = function(year, month, day) {
+      $scope.dt = new Date(year, month, day);
+    };
+
+
+    // Restituisce il tipo di data
+    $scope.getDayClass = function(date, mode) {
+      if (mode === 'day') {
+        var dayToCheck = new Date(date).setHours(0, 0, 0, 0);
+
+        for (var i = 0; i < $scope.events.length; i++) {
+          var currentDay = new Date($scope.events[i].date).setHours(0, 0, 0, 0);
+
+          if (dayToCheck === currentDay) {
+            console.log($scope.events[i].status);
+            return $scope.events[i].status;
+          }
+        }
+      }
+      return '';
+    };
+
+
+    // Inizializza la gestione del selettore del mese
+    $scope.initMonthSelector = function() {
+
       $scope.today();
-
-      $scope.clear = function() {
-        $scope.dt = null;
-      };
-
-      // Disable weekend selection
-      $scope.disabled = function(date, mode) {
-        return mode === 'day' && (date.getDay() === 0 || date.getDay() === 6);
-      };
-
-      $scope.toggleMin = function() {
-        $scope.minDate = $scope.minDate ? null : new Date("2012-01-01");
-      };
-
       $scope.toggleMin();
       $scope.maxDate = new Date("2012-12-31");
       $scope.initDate = new Date("2012-01-01");
-
-      $scope.setDate = function(year, month, day) {
-        $scope.dt = new Date(year, month, day);
-      };
 
       $scope.dateOptions = {
         formatYear: 'yy',
@@ -130,99 +166,70 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
       $scope.format = $scope.formats[0];
       $scope.altInputFormats = ['M!/d!/yyyy'];
 
-      $scope.getDayClass = function(date, mode) {
-        if (mode === 'day') {
-          var dayToCheck = new Date(date).setHours(0, 0, 0, 0);
-
-          for (var i = 0; i < $scope.events.length; i++) {
-            var currentDay = new Date($scope.events[i].date).setHours(0, 0, 0, 0);
-
-            if (dayToCheck === currentDay) {
-              console.log($scope.events[i].status);
-              return $scope.events[i].status;
-            }
-          }
-        }
-        return '';
-      };
-
-      /*      $scope.$watch('dt', function() {
-              console.log($scope.dt.getMonth()); //selezioniamo solo reports relativi al mese scelto
-           });
-      */
-
       var configuration = 'regions';
+    };
+
+    function wait(ms){
+      var start = new Date().getTime();
+      var end = start;
+      while(end < start + ms) {
+        end = new Date().getTime();
+      }
+    }
+
+    // Mostra la lista di Reports recuperati su una mappa
+    $scope.findMap = function() {
+      $scope.initMonthSelector();
+
       var reportsLoaded = new Promise(function(resolve, reject) {
+        $scope.allMarkers = [
+          [[],[],[],[],[],[],[],[],[],[],[],[]],
+          [[],[],[],[],[],[],[],[],[],[],[],[]],
+          [[],[],[],[],[],[],[],[],[],[],[],[]],
+          [[],[],[],[],[],[],[],[],[],[],[],[]],
+          [[],[],[],[],[],[],[],[],[],[],[],[]],
+          [[],[],[],[],[],[],[],[],[],[],[],[]],
+          [[],[],[],[],[],[],[],[],[],[],[],[]],
+          [[],[],[],[],[],[],[],[],[],[],[],[]],
+          [[],[],[],[],[],[],[],[],[],[],[],[]],
+          [[],[],[],[],[],[],[],[],[],[],[],[]],
+          [[],[],[],[],[],[],[],[],[],[],[],[]],
+          [[],[],[],[],[],[],[],[],[],[],[],[]],
+          [[],[],[],[],[],[],[],[],[],[],[],[]],
+          [[],[],[],[],[],[],[],[],[],[],[],[]],
+          [[],[],[],[],[],[],[],[],[],[],[],[]],
+          [[],[],[],[],[],[],[],[],[],[],[],[]],
+          [[],[],[],[],[],[],[],[],[],[],[],[]],
+          [[],[],[],[],[],[],[],[],[],[],[],[]],
+          [[],[],[],[],[],[],[],[],[],[],[],[]],
+          [[],[],[],[],[],[],[],[],[],[],[],[]]
+        ];
 
         $scope.reports = Reports.query();
         $http.get('modules/core/client/geoJson/regioni.geojson').success(function(data, status) {
-          $scope.geojsonData = data;
+          $scope.geojsonData = data;  
         });
 
         setTimeout(function() {
           resolve($scope.reports);
-          console.log('Promise resolved.');
         }, 10000);
 
       });
 
+
       reportsLoaded.then(function(reports) {
 
-        //for (var report in reports) {
+        splitReportsByRegionAndMonth(reports);
 
-        $scope.piemonteMarkers = [];
-        $scope.aostaMarkers = [];
-        $scope.lombardiaMarkers = [];
-        $scope.trentinoMarkers = [];
-        $scope.venetoMarkers = [];
-        $scope.friuliMarkers = [];
-        $scope.liguriaMarkers = [];
-        $scope.emiliaMarkers = [];
-
-        $scope.toscanaMarkers = [];
-        $scope.umbriaMarkers = [];
-        $scope.marcheMarkers = [];
-        $scope.lazioMarkers = [];
-        $scope.abruzzoMarkers = [];
-        $scope.moliseMarkers = [];
-        $scope.campaniaMarkers = [];
-        $scope.pugliaMarkers = [];
-        $scope.basilicataMarkers = [];
-        $scope.calabriaMarkers = [];
-        $scope.siciliaMarkers = [];
-        $scope.sardegnaMarkers = [];
-
-        $scope.zoom = getZoom();
-        $scope.janMarkers = [];
-        $scope.febMarkers = [];
-        $scope.marMarkers = [];
-        $scope.aprMarkers = [];
-        $scope.mayMarkers = [];
-        $scope.junMarkers = [];
-        $scope.julMarkers = [];
-        $scope.augMarkers = [];
-        $scope.sepMarkers = [];
-        $scope.octMarkers = [];
-        $scope.novMarkers = [];
-        $scope.decMarkers = [];
-
-        splitReportsByMonth(reports);
 
         $scope.$watch('dt', function() {
-          reports = chooseReports($scope.dt.getMonth() + 1);
-          console.log("lunghezza array in: " + reports.length);
-          var avgs = createMap(reports, $scope.dt.getMonth());
-          for (var i = 0; i < avgs.length; i++) {
-            //console.log(data.features[i].properties);
-            $scope.geojsonData.features[i].properties.average = avgs[i];
-            //console.log(data.features[i].properties);
-          }
+
+//          $scope.bool = false;
+         
+          var regionCode = -1;
+          updateMarkersByRegionCode(regionCode);  
+          updateMap($scope.dt.getMonth());
           angular.extend($scope, {
-            geojson: {
-              data: $scope.geojsonData,
-              style: style,
-              onEachFeature: onEachFeature
-            },
             center: {
               lat: 43,
               lng: 14,
@@ -231,61 +238,46 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
           });
         });
 
-        //apply
-        $scope.$apply(function() {
+
+
+        $scope.$apply(function () {
+          console.log("apply");
+          $scope.geojson = {
+            data: $scope.geojsonData,
+            style: style,
+            onEachFeature: onEachFeature
+          };
+
           $scope.markers = {};
-          $scope.piemonteMarkers = {};
-          $scope.aostaMarkers = {};
-          $scope.lombardiaMarkers = {};
-          $scope.trentinoMarkers = {};
-          $scope.venetoMarkers = {};
-          $scope.friuliMarkers = {};
-          $scope.liguriaMarkers = {};
-          $scope.emiliaMarkers = {};
-          $scope.toscanaMarkers = {};
-          $scope.umbriaMarkers = {};
-          $scope.marcheMarkers = {};
-          $scope.lazioMarkers = {};
-          $scope.abruzzoMarkers = {};
-          $scope.moliseMarkers = {};
-          $scope.campaniaMarkers = {};
-          $scope.pugliaMarkers = {};
-          $scope.basilicataMarkers = {};
-          $scope.calabriaMarkers = {};
-          $scope.siciliaMarkers = {};
-          $scope.sardegnaMarkers = {};
+//          $scope.bool = true;
+
         });
 
       });
-    }; // end of findMap()
+    };
 
-    function createMap(reports, selectedMonth) {
-      console.log("lunghezza array in function: " + reports.length);
+    // Aggiorna la mappa in base al mese selezionato
+    function updateMap(selectedMonth) {
 
-      $scope.markers = {};
-      $scope.piemonteMarkers = {};
-      $scope.aostaMarkers = {};
-      $scope.lombardiaMarkers = {};
-      $scope.trentinoMarkers = {};
-      $scope.venetoMarkers = {};
-      $scope.friuliMarkers = {};
-      $scope.liguriaMarkers = {};
-      $scope.emiliaMarkers = {};
-      $scope.toscanaMarkers = {};
-      $scope.umbriaMarkers = {};
-      $scope.marcheMarkers = {};
-      $scope.lazioMarkers = {};
-      $scope.abruzzoMarkers = {};
-      $scope.moliseMarkers = {};
-      $scope.campaniaMarkers = {};
-      $scope.pugliaMarkers = {};
-      $scope.basilicataMarkers = {};
-      $scope.calabriaMarkers = {};
-      $scope.siciliaMarkers = {};
-      $scope.sardegnaMarkers = {};
-      var avgs = {};
-      var report = 0;
-      var marker;
+      for (var i = 0; i < $scope.avgs[selectedMonth].length; i++) {
+        $scope.geojsonData.features[i].properties.average = $scope.avgs[selectedMonth][i];
+      }
+      console.log("UpdateMap terminato");
+    }
+
+    // Disegna il marker in base al valore di efficienza
+    var calculateMarker = function(efficiency, report) {
+
+      var regionCode = getRegionCode(report.region);
+      var period_from = report.period_from;
+      var lat = (report.lat).replace(',', '.');
+      var lng = (report.lng).replace(',', '.');
+      var date = new Date(period_from);
+      var year = date.getYear();
+      var month = date.getMonth() + 1;
+
+      var marker = {};
+
       var icons = {
         green: {
           type: 'div',
@@ -308,85 +300,52 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
           iconAnchor: [5, 5]
         }
       };
-      //medie regionali
-      var efficiency_regions = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      var efficiency_sum = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      avgs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-      for (report = 0; report < reports.length; report++) { //16839 //report=0; report<16839; report++
-        var lat = (reports[report].lat).replace(',', '.');
-        var lng = (reports[report].lng).replace(',', '.');
 
-        var expected = reports[report].expected;
-        var actual = reports[report].actual;
-        var efficiency = expected - actual;
+      if (efficiency > 0) {
 
-        var period_from = reports[report].period_from;
-        var date = new Date(period_from);
-        var year = date.getYear();
-        var month = date.getMonth() + 1;
-        if (month === $scope.dt.getMonth() + 1) {
+        if (efficiency > 50) {
+          marker = {
+            lat: parseFloat(lat),
+            lng: parseFloat(lng),
+            focus: true,
+            message: "<b>Centro di misurazione: " + report.city + "</b><br>Data: " + date.toDateString().substring(4, 7) + " " + date.toDateString().substring(10, 15) + "<br>Provincia: " + report.province + "<br>Voltaggio: " + report.voltage + "<br>Valore atteso: " + report.expected + "<br>Valore attuale: " + report.actual + "<br>Efficienza: " + efficiency,
+            draggable: true,
+            icon: icons.green,
+            month: month,
+            year: year
+          };
+        } 
 
-          //aggiungo report ai vettori
-          var indexRegions = getRegionCode(reports[report].region);
-          //console.log("------------indici " + indexRegions);
-          efficiency_regions[indexRegions - 1] = efficiency_regions[indexRegions - 1] + efficiency;
-          efficiency_sum[indexRegions - 1]++;
-
-          if (efficiency > 0) {
-
-            if (efficiency > 50) {
-              marker = {
-                lat: parseFloat(lat),
-                lng: parseFloat(lng),
-                focus: true,
-                message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Data: " + date.toDateString().substring(4, 7) + " " + date.toDateString().substring(10, 15) + "<br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency,
-                draggable: true,
-                icon: icons.green,
-                month: month,
-                year: year
-              };
-            } else {
-              marker = {
-                lat: parseFloat(lat),
-                lng: parseFloat(lng),
-                focus: true,
-                message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Data: " + date.toDateString().substring(4, 7) + " " + date.toDateString().substring(10, 15) + "<br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency,
-                draggable: true,
-                icon: icons.orange,
-                month: month,
-                year: year
-              };
-            }
-          } else {
-            marker = {
-              lat: parseFloat(lat),
-              lng: parseFloat(lng),
-              focus: true,
-              message: "<b>Centro di misurazione: " + reports[report].city + "</b><br>Data: " + date.toDateString().substring(4, 7) + " " + date.toDateString().substring(10, 15) + "<br>Provincia: " + reports[report].province + "<br>Voltaggio: " + reports[report].voltage + "<br>Valore atteso: " + reports[report].expected + "<br>Valore attuale: " + reports[report].actual + "<br>Efficienza: " + efficiency,
-              draggable: true,
-              icon: icons.red
-            };
-          }
-          //console.log(month);
-          //----------------------------IF--------------
-
-          addMarkerToRegion(indexRegions, report, marker);
+        else {
+          marker = {
+            lat: parseFloat(lat),
+            lng: parseFloat(lng),
+            focus: true,
+            message: "<b>Centro di misurazione: " + report.city + "</b><br>Data: " + date.toDateString().substring(4, 7) + " " + date.toDateString().substring(10, 15) + "<br>Provincia: " + report.province + "<br>Voltaggio: " + report.voltage + "<br>Valore atteso: " + report.expected + "<br>Valore attuale: " + report.actual + "<br>Efficienza: " + efficiency,
+            draggable: true,
+            icon: icons.orange,
+            month: month,
+            year: year
+          };
         }
+      } 
 
+      else {
+        marker = {
+          lat: parseFloat(lat),
+          lng: parseFloat(lng),
+          focus: true,
+          message: "<b>Centro di misurazione: " + report.city + "</b><br>Data: " + date.toDateString().substring(4, 7) + " " + date.toDateString().substring(10, 15) + "<br>Provincia: " + report.province + "<br>Voltaggio: " + report.voltage + "<br>Valore atteso: " + report.expected + "<br>Valore attuale: " + report.actual + "<br>Efficienza: " + efficiency,
+          draggable: true,
+          icon: icons.red
+        };
       }
-      //stampa di prova per gli array
-      //console.log(efficiency_regions);
-      //console.log(efficiency_sum);
-      for (var i = 0; i < avgs.length; i++) {
-        if (efficiency_sum[i] !== 0) {
-          avgs[i] = efficiency_regions[i] / efficiency_sum[i];
-        }
-      }
-      //console.log(avgs);
 
-      return avgs;
-    }
+      return marker;
+    };
 
+
+    // Restituisce il codice di una regione, dato il nome per esteso
     function getRegionCode(regionString) {
       var regionCode;
       switch (regionString) {
@@ -454,170 +413,105 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
       return regionCode;
     }
 
-    function addMarkerToRegion(indexRegions, report, marker) {
-      switch (indexRegions) {
-        case 1:
-          $scope.piemonteMarkers[report] = marker;
-          break;
-        case 2:
-          $scope.aostaMarkers[report] = marker;
-          break;
-        case 3:
-          $scope.lombardiaMarkers[report] = marker;
-          break;
-        case 4:
-          $scope.trentinoMarkers[report] = marker;
-          break;
-        case 5:
-          $scope.venetoMarkers[report] = marker;
-          break;
-        case 6:
-          $scope.friuliMarkers[report] = marker;
-          break;
-        case 7:
-          $scope.liguriaMarkers[report] = marker;
-          break;
-        case 8:
-          $scope.emiliaMarkers[report] = marker;
-          break;
-        case 9:
-          $scope.toscanaMarkers[report] = marker;
-          break;
-        case 10:
-          $scope.umbriaMarkers[report] = marker;
-          break;
-        case 11:
-          $scope.marcheMarkers[report] = marker;
-          break;
-        case 12:
-          $scope.lazioMarkers[report] = marker;
-          break;
-        case 13:
-          $scope.abruzzoMarkers[report] = marker;
-          break;
-        case 14:
-          $scope.moliseMarkers[report] = marker;
-          break;
-        case 15:
-          $scope.campaniaMarkers[report] = marker;
-          break;
-        case 16:
-          $scope.pugliaMarkers[report] = marker;
-          break;
-        case 17:
-          $scope.basilicataMarkers[report] = marker;
-          break;
-        case 18:
-          $scope.calabriaMarkers[report] = marker;
-          break;
-        case 19:
-          $scope.siciliaMarkers[report] = marker;
-          break;
-        case 20:
-          $scope.sardegnaMarkers[report] = marker;
-          break;
-      }
+
+    // Aggiunge un marker ad una regione, nella lista del mese corrispondente
+    function addMarkerToRegion(marker, regionCode, month) {  
+      if($scope.allMarkers[regionCode-1][month-1]) {
+        $scope.allMarkers[regionCode-1][month-1].push(marker);
+      } 
     }
 
-    function chooseReports(month) {
-      switch (month) {
-        case 1:
-          $scope.reports = $scope.janMarkers;
-          break;
-        case 2:
-          $scope.reports = $scope.febMarkers;
-          break;
-        case 3:
-          $scope.reports = $scope.marMarkers;
-          break;
-        case 4:
-          $scope.reports = $scope.aprMarkers;
-          break;
-        case 5:
-          $scope.reports = $scope.mayMarkers;
-          break;
-        case 6:
-          $scope.reports = $scope.junMarkers;
-          break;
-        case 7:
-          $scope.reports = $scope.julMarkers;
-          break;
-        case 8:
-          $scope.reports = $scope.augMarkers;
-          break;
-        case 9:
-          $scope.reports = $scope.sepMarkers;
-          break;
-        case 10:
-          $scope.reports = $scope.octMarkers;
-          break;
-        case 11:
-          $scope.reports = $scope.novMarkers;
-          break;
-        case 12:
-          $scope.reports = $scope.decMarkers;
-          break;
-      }
-      return $scope.reports;
-    }
 
-    function splitReportsByMonth(reports) {
-      var report = 0;
-      var reportMonth = [];
-      for (report = 0; report < reports.length; report++) {
-        var period_from = reports[report].period_from;
+    // Divide e ridistribuisce i report in base alla regione e al mese
+    function splitReportsByRegionAndMonth(reports) {
+
+      var efficiency_regions = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      ];
+
+      var efficiency_sum = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      ];
+
+      $scope.avgs = [
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+      ];
+
+      for (var i = 0; i < reports.length; i++) {
+
+        var report = reports[i];
+
+        var regionCode = getRegionCode(report.region);
+        var period_from = report.period_from;
+        var lat = (report.lat).replace(',', '.');
+        var lng = (report.lng).replace(',', '.');
         var date = new Date(period_from);
         var month = date.getMonth() + 1;
-        addReport2Month(month, reports[report]);
+        var expected = report.expected;
+        var actual = report.actual;
+        var efficiency = expected - actual;
+
+        var marker = calculateMarker(efficiency, report);
+        addMarkerToRegion(marker, regionCode, month);
+
+        efficiency_regions[month-1][regionCode-1] = efficiency_regions[month-1][regionCode-1] + efficiency;
+        efficiency_sum[month-1][regionCode-1]++;  
+
       }
 
-    }
-
-    function addReport2Month(month, report) {
-      switch (month) {
-        case 1:
-          $scope.janMarkers.push(report);
-          break;
-        case 2:
-          $scope.febMarkers.push(report);
-          break;
-        case 3:
-          $scope.marMarkers.push(report);
-          break;
-        case 4:
-          $scope.aprMarkers.push(report);
-          break;
-        case 5:
-          $scope.mayMarkers.push(report);
-          break;
-        case 6:
-          $scope.junMarkers.push(report);
-          break;
-        case 7:
-          $scope.julMarkers.push(report);
-          break;
-        case 8:
-          $scope.augMarkers.push(report);
-          break;
-        case 9:
-          $scope.sepMarkers.push(report);
-          break;
-        case 10:
-          $scope.octMarkers.push(report);
-          break;
-        case 11:
-          $scope.novMarkers.push(report);
-          break;
-        case 12:
-          $scope.decMarkers.push(report);
-          break;
+      for (var m=0; m < 12; m++) {
+        for (var r = 0; r < 20; r++) {
+          if (efficiency_sum[m][r] !== 0) {
+            $scope.avgs[m][r] = efficiency_regions[m][r] / efficiency_sum[m][r];
+          }
+        } 
       }
-
+    /*  console.log($scope.avgs);
+      for (var i = 0; i<12; i++){
+        var line = "";
+        for (var j = 0; j <20; j++){
+          line = line.concat($scope.avgs[i][j] + ",");
+        }
+        console.log(line);
+      }
+*/
     }
+
 
     function getColorByEfficiency(efficiency) {
-      // if $scope.configuration === 2 ...
-      // Il codice regione 12 corrisponde al Lazio
       return efficiency === 0 ? '#000000' : // nero
         efficiency < 0 ? '#000000' : // nero
         efficiency > 300 ? '#4dc22d' : //verde
@@ -629,13 +523,16 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
     }
 
     function style(feature) {
+      var regionCode = feature.properties.COD_REG;
+      var efficiency = $scope.avgs[$scope.dt.getMonth()][regionCode-1];
+      console.log("style terminato");
       return {
         weight: 2,
         opacity: 1,
         color: 'white',
         dashArray: '3',
         fillOpacity: 0.7,
-        fillColor: getColorByEfficiency(feature.properties.average)
+        fillColor: getColorByEfficiency(efficiency)
       };
     }
 
@@ -657,16 +554,10 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
         fillOpacity: 0.7
       });
 
-      // if (!L.Browser.ie && !L.Browser.opera) {
-      //   layer.bringToFront();
-      // }
-
-      //info.update(layer.feature.properties);
     }
 
+
     function resetHighlight(e) {
-      //$scope.geojson.resetStyle(e.target);
-      //info.update();
       var layer = e.target;
 
       layer.setStyle({
@@ -678,9 +569,6 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
       });
     }
 
-    function getDate() {
-
-    }
 
     function zoomToFeature(e) {
       leafletData.getMap().then(function(map) {
@@ -691,6 +579,7 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
 
     }
 
+
     function getZoom() {
       leafletData.getMap().then(function(map) {
         var zoom = map.getZoom();
@@ -698,69 +587,17 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
       });
     }
 
+
     function updateMarkersByRegionCode(regionCode) {
-      switch (regionCode) {
-        case 1:
-          $scope.markers = $scope.piemonteMarkers;
-          break;
-        case 2:
-          $scope.markers = $scope.aostaMarkers;
-          break;
-        case 3:
-          $scope.markers = $scope.lombardiaMarkers;
-          break;
-        case 4:
-          $scope.markers = $scope.trentinoMarkers;
-          break;
-        case 5:
-          $scope.markers = $scope.venetoMarkers;
-          break;
-        case 6:
-          $scope.markers = $scope.friuliMarkers;
-          break;
-        case 7:
-          $scope.markers = $scope.liguriaMarkers;
-          break;
-        case 8:
-          $scope.markers = $scope.emiliaMarkers;
-          break;
-        case 9:
-          $scope.markers = $scope.toscanaMarkers;
-          break;
-        case 10:
-          $scope.markers = $scope.umbriaMarkers;
-          break;
-        case 11:
-          $scope.markers = $scope.marcheMarkers;
-          break;
-        case 12:
-          $scope.markers = $scope.lazioMarkers;
-          break;
-        case 13:
-          $scope.markers = $scope.abruzzoMarkers;
-          break;
-        case 14:
-          $scope.markers = $scope.moliseMarkers;
-          break;
-        case 15:
-          $scope.markers = $scope.campaniaMarkers;
-          break;
-        case 16:
-          $scope.markers = $scope.pugliaMarkers;
-          break;
-        case 17:
-          $scope.markers = $scope.basilicataMarkers;
-          break;
-        case 18:
-          $scope.markers = $scope.calabriaMarkers;
-          break;
-        case 19:
-          $scope.markers = $scope.siciliaMarkers;
-          break;
-        case 20:
-          $scope.markers = $scope.sardegnaMarkers;
-          break;
+      if (regionCode === -1) {
+        regionCode = $scope.currentRegionCode;
+      } 
+      else {
+        $scope.currentRegionCode = regionCode;
       }
+      if (regionCode) {
+        $scope.markers = $scope.allMarkers[regionCode-1][$scope.dt.getMonth()]; 
+      } 
     }
 
     // Find existing Report
@@ -769,5 +606,6 @@ angular.module('reports').controller('ReportsController', ['$scope', '$http', 'l
         reportId: $stateParams.reportId
       });
     };
+
   }
 ]);

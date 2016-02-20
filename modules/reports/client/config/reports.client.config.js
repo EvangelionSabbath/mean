@@ -23,6 +23,12 @@ angular.module('reports').run(['Menus',
       state: 'reports.listMap'
     });
 
+    // Add the dropdown list item on map
+    Menus.addSubMenuItem('topbar', 'reports', {
+      title: 'Time Chart',
+      state: 'reports.chart'
+    });
+
     // Add the dropdown create item
     Menus.addSubMenuItem('topbar', 'reports', {
       title: 'Create Reports',
